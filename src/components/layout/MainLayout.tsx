@@ -4,6 +4,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import OfflineIndicator from '@/components/ui/OfflineIndicator';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
@@ -20,6 +21,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <OfflineIndicator />
             <nav className="bg-white shadow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">

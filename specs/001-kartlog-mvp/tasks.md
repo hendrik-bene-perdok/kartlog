@@ -41,42 +41,42 @@
 **Goal**: implement CRUD for engines, chassis, and tires with polymorphic fields.
 **Priority**: P1
 
-- [ ] T021 [US2] [P] Implement `useParts` hook (CRUD operations) in `src/hooks/useParts.ts`
-- [ ] T022 [US2] Create re-usable `PartCard` component in `src/components/parts/PartCard.tsx`
-- [ ] T023 [US2] Create Parts List Page in `src/app/parts/page.tsx`
-- [ ] T024 [US2] Create `PartForm` component with Type Selector (Engine/Chassis/Tire) in `src/components/parts/PartForm.tsx`
-- [ ] T025 [US2] Implement conditional fields for Engine (Hours, Rebuild Date) in `src/components/parts/forms/EngineFields.tsx`
-- [ ] T026 [US2] Implement conditional fields for Chassis (Model Year, Notes) in `src/components/parts/forms/ChassisFields.tsx`
-- [ ] T027 [US2] Implement conditional fields for Tires (Compound, Condition) in `src/components/parts/forms/TireFields.tsx`
-- [ ] T028 [US2] Create Add Part Page in `src/app/parts/new/page.tsx`
-- [ ] T029 [US2] Create Edit Part Page in `src/app/parts/[id]/edit/page.tsx`
-- [ ] T030 [US2] E2E Test: Create Engine, Check Inventory, Edit Status in `tests/e2e/parts.spec.ts`
+- [x] T021 [US2] [P] Implement `useParts` hook (CRUD operations) in `src/hooks/useParts.ts`
+- [x] T022 [US2] Create re-usable `PartCard` component in `src/components/parts/PartCard.tsx`
+- [x] T023 [US2] Create Parts List Page in `src/app/parts/page.tsx`
+- [x] T024 [US2] Create `PartForm` component with Type Selector (Engine/Chassis/Tire) in `src/components/parts/PartForm.tsx`
+- [x] T025 [US2] Implement conditional fields for Engine (Hours, Rebuild Date) in `src/components/parts/forms/EngineFields.tsx`
+- [x] T026 [US2] Implement conditional fields for Chassis (Model Year, Notes) in `src/components/parts/forms/ChassisFields.tsx`
+- [x] T027 [US2] Implement conditional fields for Tires (Compound, Condition) in `src/components/parts/forms/TireFields.tsx`
+- [x] T028 [US2] Create Add Part Page in `src/app/parts/new/page.tsx`
+- [x] T029 [US2] Create Edit Part Page in `src/app/parts/[id]/edit/page.tsx`
+- [x] T030 [US2] E2E Test: Create Engine, Check Inventory, Edit Status in `tests/e2e/parts.spec.ts`
 
 ## Phase 5: Session Logging (US3)
 **Goal**: Log track sessions with setup details (specifically tire pressure).
 **Priority**: P1
 
-- [ ] T031 [US3] [P] Implement `useSessions` hook (Create, List, Read) in `src/hooks/useSessions.ts`
-- [ ] T032 [US3] Create Session List item component in `src/components/sessions/SessionItem.tsx`
-- [ ] T033 [US3] Create Sessions History Page in `src/app/sessions/page.tsx`
-- [ ] T034 [US3] Create `SessionForm` (Date, Track, Notes) in `src/components/sessions/SessionForm.tsx`
-- [ ] T035 [US3] Implement Setup Configuration Input (Tire Pressure FL/FR/RL/RR) in `src/components/sessions/SetupInput.tsx`
-- [ ] T036 [US3] Create Log Session Page in `src/app/sessions/new/page.tsx`
-- [ ] T037 [US3] E2E Test: Log Session with Tire Pressure setup in `tests/e2e/sessions.spec.ts`
+- [x] T031 [US3] [P] Implement `useSessions` hook (Create, List, Read) in `src/hooks/useSessions.ts`
+- [x] T032 [US3] Create Session List item component in `src/components/sessions/SessionItem.tsx`
+- [x] T033 [US3] Create Sessions History Page in `src/app/sessions/page.tsx`
+- [x] T034 [US3] Create `SessionForm` (Date, Track, Notes) in `src/components/sessions/SessionForm.tsx`
+- [x] T035 [US3] Implement Setup Configuration Input (Tire Pressure FL/FR/RL/RR) in `src/components/sessions/SetupInput.tsx`
+- [x] T036 [US3] Create Log Session Page in `src/app/sessions/new/page.tsx`
+- [x] T037 [US3] E2E Test: Log Session with Tire Pressure setup in `tests/e2e/sessions.spec.ts`
 
 ## Phase 6: Offline Access & PWA (US4)
 **Goal**: Ensure app works without network and syncs when reconnected.
 **Priority**: P2
 
-- [ ] T038 [US4] Create `OfflineIndicator` component (Toast/Banner) in `src/components/ui/OfflineIndicator.tsx`
-- [ ] T039 [US4] Implement "Pending Sync" visual state in Lists (Parts/Sessions) in `src/components/ui/SyncStatus.tsx`
-- [ ] T040 [US4] Verify PWA Manifest icons and colors in `public/manifest.json`
-- [ ] T041 [US4] E2E Test: Offline Write > Online Sync simulation in `tests/e2e/offline.spec.ts`
+- [x] T038 [US4] Create `OfflineIndicator` component (Toast/Banner) in `src/components/ui/OfflineIndicator.tsx`
+- [x] T039 [US4] Implement "Pending Sync" visual state in Lists (Parts/Sessions) in `src/components/ui/SyncStatus.tsx`
+- [x] T040 [US4] Verify PWA Manifest icons and colors in `public/manifest.json`
+- [x] T041 [US4] E2E Test: Offline Write > Online Sync simulation in `tests/e2e/offline.spec.ts`
 
 ## Phase 7: Polish & Deployment
 **Goal**: Final cleanup and production readiness.
 
-- [ ] T042 Configure `firebase.json` for Hosting and Firestore indexes
+- [x] T042 Configure `firebase.json` for Hosting and Firestore indexes
 - [ ] T043 Run full linting and type checking (fix any strict mode errors)
 - [ ] T044 Create `README.md` with setup instructions (based on quickstart)
 - [ ] T045 Final Manual Q/A: Install PWA on a mobile device simulator
