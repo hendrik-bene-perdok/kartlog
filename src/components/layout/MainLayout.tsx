@@ -39,6 +39,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                                 <Link href="/sessions" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                     Sessions
                                 </Link>
+                                <Link href="/teams" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    Teams
+                                </Link>
                             </div>
                         </div>
                         <div className="flex items-center">
@@ -56,6 +59,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         <Link href="/dashboard" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">Dashboard</Link>
                         <Link href="/parts" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">Parts</Link>
                         <Link href="/sessions" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">Sessions</Link>
+                        <Link href="/teams" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">Teams</Link>
                     </div>
                 </div>
             </nav>

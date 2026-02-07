@@ -3,28 +3,33 @@
 Auto-generated from all feature plans. Last updated: 2026-02-07
 
 ## Active Technologies
+- Firestore (002-team-management)
 
-- [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION] (001-kartlog-mvp)
+- TypeScript 5.x + Next.js 16 (React 19) + Firebase v9 + Tailwind CSS 4 (002-team-management)
 
 ## Project Structure
 
 ```text
-backend/
-frontend/
+specs/
+src/
+  app/
+  components/
+  lib/
+  types/
 tests/
 ```
 
 ## Commands
 
-cd src; pytest; ruff check .
+npm run dev; npm run lint; npm run test; npm run test:e2e
 
 ## Code Style
 
-[e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]: Follow standard conventions
+TypeScript: Follow standard conventions (strict mode, interfaces for domain objects)
+React: Functional components, Hooks for logic, Context for global state
 
 ## Recent Changes
-
-- 001-kartlog-mvp: Added [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
+- 002-team-management: Added TypeScript 5.x + Next.js 16 (React 19) + Firebase v9 + Tailwind CSS 4
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
