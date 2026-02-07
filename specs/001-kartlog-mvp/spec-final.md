@@ -5,6 +5,24 @@
 **Status**: Draft
 **Input**: User description: "kartlog is a modern minimilistic responsive(primairy focus is mobile) web application that helps you or team maintain a kartparts(engine, chassis, tire pressure, etc) , kart sessions, parts management, basic user account management, team management. - frontend with local storage(offline modes), modern framework - backend with api's - database for persistants"
 
+## Clarifications
+
+### Session 2026-02-07
+- Q: How should different part types (Engine vs Tires) generally be modeled? -> A: **Hybrid**: Fixed common fields (Name, Serial) + one "Notes" text field for extras.
+- Q: What is the preferred offline strategy? -> A: **PWA using IndexedDB for storage and Service Workers for sync**.
+- Q: What authentication method? -> A: **OAuth Only (Google/Apple)**. No stored passwords.
+- Q: Automatic Team creation? -> A: **Personal Team**: Every user gets a default team on sign-up; can invite others.
+- Q: Role Granularity? -> A: **Simple**: Owner (Admin) vs Member (Editor).
+- Q: Tech Stack? -> A: **Next.js (React)**.
+- Q: Database for persistence? -> A: **Firebase (Firestore)**.
+- Q: Styling approach? -> A: **Tailwind CSS**.
+- Q: API Strategy? -> A: **Direct Client SDK** (No separate backend; Firestore Rules for security).
+- Q: Hosting? -> A: **Firebase Hosting**.
+
+
+
+
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -87,18 +105,19 @@ As a Mobile User at a track with bad reception, I want to view my parts and log 
 
 ### Functional Requirements
 
-- **FR-001**: System MUST allow users to register and login (Email/Password).
-- **FR-002**: System MUST support "Team" entities that group Users and Resources (Parts/Sessions).
+- **FR-001**: System MUST allow users to register and login via **OAuth Providers** (Google/Apple) ONLY. No local passwords.
+- **FR-002**: System MUST automatically create a "Personal Team" for new users on signup. (Invites add other users to this team).
 - **FR-003**: Users MUST be able to Create, Read, Update, and Delete (CRUD) Parts (Engine, Chassis, Tires).
+    - **Constraint**: Parts share common fields (Name, Serial, Status) plus a "Notes" field; no complex custom schemas for MVP.
 - **FR-004**: System MUST allow logging of Sessions linked to a Team and Date.
 - **FR-005**: Session logs MUST support dynamic setup fields (specifically Tire Pressure).
-- **FR-006**: The Frontend MUST function offline (PWA standards), caching data locally.
-- **FR-007**: The System MUST synchronize local data with the Backend API when connectivity is available.
+- **FR-006**: The Frontend MUST function offline (PWA standards), caching data locally via IndexedDB.
+- **FR-007**: The System MUST synchronize local data with the **Cloud Store** (Firestore) when connectivity is available (handled via SDK).
 
 ### Non-Functional Requirements
 
 ### Security & Privacy ([Constitution IV])
-- **SEC-001**: AuthZ [Must enforce Team-level isolation - User A cannot see User B's team data unless invited].
+- **SEC-001**: AuthZ [Must enforce Owner vs Member roles via **Firestore Security Rules**: Owners write team capabilities; Members read/update specific collections].
 - **SEC-002**: Data Protection [Encrypt passwords at rest; HTTPS for all transport].
 - **SEC-003**: Input Validation [Validate all form inputs (serial numbers, pressures) on client and server].
 
@@ -127,6 +146,9 @@ As a Mobile User at a track with bad reception, I want to view my parts and log 
 
 ## Assumptions
 
-- "Modern framework" implies a robust SPA/PWA stack (e.g., React/Vue/Svelte + Service Workers).
-- "Database for persistants" implies a relational DB (PostgreSQL) or Document Store (MongoDB) suitable for sync.
+- **Framework**: `Next.js (React)` (Unified Frontend/Backend + PWA). Verified in clarifications.
+- **Database**: `Firebase/Firestore` (NoSQL, Realtime, simplifies Offline). Verified in clarifications.
+- **Styling**: `Tailwind CSS`. Verified in clarifications.
+- **Architecture**: `Direct Client SDK` (Serverless, uses Firestore Security Rules). Validated in clarifications.
+- **Hosting**: `Firebase Hosting` (Single platform for Data/Auth/Hosting).
 - "Kartparts" data structure needs flexibility (different attributes for Engines vs Tires).
