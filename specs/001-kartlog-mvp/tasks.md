@@ -77,8 +77,8 @@
 **Goal**: Final cleanup and production readiness.
 
 - [x] T042 Configure `firebase.json` for Hosting and Firestore indexes
-- [ ] T043 Run full linting and type checking (fix any strict mode errors)
-- [ ] T044 Create `README.md` with setup instructions (based on quickstart)
+- [x] T043 Run full linting and type checking (fix any strict mode errors)
+- [x] T044 Create `README.md` with setup instructions (based on quickstart)
 - [ ] T045 Final Manual Q/A: Install PWA on a mobile device simulator
 
 ## Dependencies
