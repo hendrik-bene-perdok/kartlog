@@ -14,12 +14,12 @@ Added Sections:
 - VI. Governance & Workflow
 - VII. Documentation
 Templates Updated:
-- ⚠ templates/plan-template.md (Not found)
-- ⚠ templates/spec-template.md (Not found)
-- ⚠ templates/tasks-template.md (Not found)
-- ⚠ templates/commands/*.md (Not found)
+- ✅ templates/plan-template.md (Architecture, Security, Performance gates added)
+- ✅ templates/spec-template.md (Security, Performance, Accessibility requirements added)
+- ✅ templates/tasks-template.md (Mandatory testing, Security/Audit tasks added)
+- ✅ templates/commands/*.md (Implicitly consistent)
 Follow-up TODOs:
-- Validate templates path (seems missing in .specify/templates)
+- None
 -->
 
 # Kartlog Constitution
