@@ -110,10 +110,13 @@ export async function deleteKart(kartId: string): Promise<{
     // Delete kart
     batch.delete(doc(db, KARTS_COLLECTION, kartId));
 
+    const userId = getCurrentUserId();
+
     // Query and delete all related tasks
     const tasksQuery = query(
         collection(db, TASKS_COLLECTION),
-        where('kartId', '==', kartId)
+        where('kartId', '==', kartId),
+        where('userId', '==', userId)
     );
     const tasksSnapshot = await getDocs(tasksQuery);
     tasksSnapshot.docs.forEach(doc => batch.delete(doc.ref));
@@ -121,7 +124,8 @@ export async function deleteKart(kartId: string): Promise<{
     // Query and delete all related shopping items
     const shoppingQuery = query(
         collection(db, SHOPPING_COLLECTION),
-        where('kartId', '==', kartId)
+        where('kartId', '==', kartId),
+        where('userId', '==', userId)
     );
     const shoppingSnapshot = await getDocs(shoppingQuery);
     shoppingSnapshot.docs.forEach(doc => batch.delete(doc.ref));
@@ -129,7 +133,8 @@ export async function deleteKart(kartId: string): Promise<{
     // Query and delete all session logs
     const sessionsQuery = query(
         collection(db, SESSIONS_COLLECTION),
-        where('kartId', '==', kartId)
+        where('kartId', '==', kartId),
+        where('userId', '==', userId)
     );
     const sessionsSnapshot = await getDocs(sessionsQuery);
     sessionsSnapshot.docs.forEach(doc => batch.delete(doc.ref));

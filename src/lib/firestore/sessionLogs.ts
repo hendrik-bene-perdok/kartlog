@@ -29,15 +29,25 @@ const KARTS_COLLECTION = 'karts';
  * @param kartId - Kart ID
  * @returns Array of session logs ordered by logged date (newest first)
  */
+/**
+ * Get session logs for a specific kart
+ * 
+ * @param kartId - Kart ID
+ * @returns Array of session logs ordered by logged date (newest first)
+ */
 export async function getSessionLogs(kartId: string): Promise<SessionLog[]> {
+    const userId = getCurrentUserId();
     const sessionsQuery = query(
         collection(db, SESSIONS_COLLECTION),
         where('kartId', '==', kartId),
-        orderBy('loggedAt', 'desc')
+        where('userId', '==', userId)
     );
 
     const snapshot = await getDocs(sessionsQuery);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SessionLog));
+    const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SessionLog));
+
+    // Sort in memory to avoid composite index requirement
+    return logs.sort((a, b) => b.loggedAt.seconds - a.loggedAt.seconds);
 }
 
 /**
@@ -63,15 +73,18 @@ export async function createSessionLog(
     const durationHours = durationMinutes / 60;
     const now = Timestamp.now();
 
-    const sessionLogData = {
+    const sessionLogData: Record<string, any> = {
         kartId,
         userId,
         durationMinutes,
         durationHours,
-        notes: notes || undefined,
         loggedAt: now,
         createdAt: now,
     };
+
+    if (notes) {
+        sessionLogData.notes = notes;
+    }
 
     // Use transaction to atomically update both session log and kart hours
     const sessionLogId = await runTransaction(db, async (transaction) => {
@@ -98,16 +111,18 @@ export async function createSessionLog(
         return sessionLogRef.id;
     });
 
-    return { id: sessionLogId, ...sessionLogData };
+    return { id: sessionLogId, ...sessionLogData } as SessionLog;
 }
 
 /**
  * Get total session count for a kart
  */
 export async function getSessionCount(kartId: string): Promise<number> {
+    const userId = getCurrentUserId();
     const sessionsQuery = query(
         collection(db, SESSIONS_COLLECTION),
-        where('kartId', '==', kartId)
+        where('kartId', '==', kartId),
+        where('userId', '==', userId)
     );
 
     const snapshot = await getDocs(sessionsQuery);
@@ -118,10 +133,11 @@ export async function getSessionCount(kartId: string): Promise<number> {
  * Get most recent session for a kart
  */
 export async function getLastSession(kartId: string): Promise<SessionLog | null> {
+    const userId = getCurrentUserId();
     const sessionsQuery = query(
         collection(db, SESSIONS_COLLECTION),
         where('kartId', '==', kartId),
-        orderBy('loggedAt', 'desc')
+        where('userId', '==', userId)
     );
 
     const snapshot = await getDocs(sessionsQuery);
@@ -130,6 +146,9 @@ export async function getLastSession(kartId: string): Promise<SessionLog | null>
         return null;
     }
 
-    const firstDoc = snapshot.docs[0];
-    return { id: firstDoc.id, ...firstDoc.data() } as SessionLog;
+    const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SessionLog));
+    // Sort in memory to find newest
+    logs.sort((a, b) => b.loggedAt.seconds - a.loggedAt.seconds);
+
+    return logs[0];
 }

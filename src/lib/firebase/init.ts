@@ -6,7 +6,8 @@
  */
 
 import { initializeApp, getApps } from 'firebase/app';
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -21,24 +22,22 @@ const firebaseConfig = {
  * Initialize Firebase app (singleton pattern)
  */
 export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+export const auth = getAuth(app);
 
-/**
- * Initialize Firestore with offline persistence
- * 
- * Configuration:
- * - persistentLocalCache: Enables offline data persistence
- * - persistentMultipleTabManager: Allows multiple tabs to share the same cache
- * 
- * This ensures that:
- * 1. CRUD operations work without internet connection
- * 2. Changes sync automatically when connection restored
- * 3. Query results are cached for instant reads
- */
-export const db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager()
-    })
-});
+let db: import('firebase/firestore').Firestore;
+
+try {
+    db = initializeFirestore(app, {
+        localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager()
+        })
+    });
+} catch (e) {
+    // If Firestore is already initialized (e.g. during HMR), use the existing instance
+    db = getFirestore(app);
+}
+
+export { db };
 
 /**
  * Get current user ID
