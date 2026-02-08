@@ -139,6 +139,14 @@ Push to GitHub and connect to Vercel for automatic deployments.
 - Track tire pressure (FL/FR/RL/RR)
 - Add session notes and observations
 
+### Maintenance Core (New!)
+- **Garage**: Manage multiple karts with maintenance status indicators
+- **Engine Hours**: Log operating hours with automatic accumulation
+- **Auto-Tasks**: Maintenance tasks created automatically based on engine hours
+- **Shopping**: Track parts to buy with photo attachments (compressed offline)
+- **Tasks**: Priority-based maintenance to-do list with swipe actions
+
+
 ### Offline Mode
 - All data cached locally via IndexedDB
 - Visual offline indicator banner
