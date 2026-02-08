@@ -8,7 +8,7 @@ import {
     updateTeam,
     deleteTeam,
     getTeamById,
-    generateInviteLink
+    regenerateInviteCode
 } from './team.service';
 
 // Mock Firestore
@@ -152,11 +152,11 @@ describe('TeamService', () => {
         });
     });
 
-    describe('generateInviteLink', () => {
+    describe('regenerateInviteCode', () => {
         it('should generate new 8-character code', async () => {
             const { updateDoc } = await import('firebase/firestore');
 
-            const code = await generateInviteLink('team-123');
+            const code = await regenerateInviteCode('team-123');
 
             expect(code).toMatch(/^[A-Z0-9]{8}$/);
             expect(updateDoc).toHaveBeenCalledWith(

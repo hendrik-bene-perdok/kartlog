@@ -29,6 +29,7 @@ export const teamConverter: FirestoreDataConverter<Team> = {
             description: data.description || '',
             ownerId: data.ownerId,
             inviteCode: data.inviteCode,
+            inviteCodeExpiresAt: data.inviteCodeExpiresAt ? timestampToDate(data.inviteCodeExpiresAt) : undefined,
             createdAt: data.createdAt ? timestampToDate(data.createdAt) : new Date(),
             updatedAt: data.updatedAt ? timestampToDate(data.updatedAt) : new Date(),
         };

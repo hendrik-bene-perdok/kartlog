@@ -11,6 +11,7 @@ export interface Team {
     description: string;
     ownerId: string;
     inviteCode?: string;
+    inviteCodeExpiresAt?: Date;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -55,7 +55,12 @@ service cloud.firestore {
         allow read: if isActiveMember(teamId) || memberId == request.auth.uid;
         
         // Allow creating a join request (pending member) for oneself
-        allow create: if isAuthenticated() && memberId == request.auth.uid && request.resource.data.status == 'pending';
+        // OR allow creator to add themselves as owner/active if they own the team
+        allow create: if isAuthenticated() && memberId == request.auth.uid && 
+          (
+            request.resource.data.status == 'pending' || 
+            (isTeamOwner(teamId) && request.resource.data.role == 'owner' && request.resource.data.status == 'active')
+          );
         
         // Only Admin/Owner can update members (approve, change role)
         // Self-update removed to prevent self-approval
@@ -88,6 +93,14 @@ service cloud.firestore {
         allow read: if isActiveMember(teamId);
         allow write: if isActiveMember(teamId);
       }
+    }
+
+    // --- Collection Group Queries ---
+    // Allow users to query their own member documents across all teams
+    match /{path=**}/members/{memberId} {
+      allow read: if request.auth != null && 
+                     (memberId == request.auth.uid || 
+                      resource.data.uid == request.auth.uid);
     }
   }
 }

@@ -3,12 +3,14 @@
 
 import {
     collection,
+    collectionGroup,
     doc,
     getDoc,
     getDocs,
     addDoc,
     updateDoc,
     deleteDoc,
+    setDoc,
     query,
     where,
 } from 'firebase/firestore';
@@ -42,6 +44,7 @@ export async function createTeam(
         description: input.description || '',
         ownerId: userId,
         inviteCode: generateInviteCode(),
+        inviteCodeExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h validity
         createdAt: new Date(),
         updatedAt: new Date(),
     };
@@ -49,8 +52,9 @@ export async function createTeam(
     const docRef = await addDoc(teamsRef, newTeam as any);
 
     // Create owner member record
-    const membersRef = collection(db, `teams/${docRef.id}/members`).withConverter(teamMemberConverter);
-    await addDoc(membersRef, {
+    // Use setDoc to ensure document ID matches userId (required by security rules)
+    const memberRef = doc(db, `teams/${docRef.id}/members`, userId).withConverter(teamMemberConverter);
+    await setDoc(memberRef, {
         uid: userId,
         role: 'owner',
         status: 'active',
@@ -66,26 +70,27 @@ export async function createTeam(
  * Get all teams the user belongs to
  */
 export async function getUserTeams(userId: string): Promise<Team[]> {
-    // Query teams where user is a member
-    // Note: This requires composite index or collection group query
-    // For MVP, we'll query all teams and filter client-side
-    // TODO: Optimize with collection group query on members subcollection
+    // Query all member records for this user across all teams
+    // Requires an index on 'members' collection group for 'uid' + 'status'
+    const membersQuery = query(
+        collectionGroup(db, 'members'),
+        where('uid', '==', userId),
+        where('status', '==', 'active')
+    );
 
-    const teamsRef = collection(db, 'teams').withConverter(teamConverter);
-    const snapshot = await getDocs(teamsRef);
+    const snapshot = await getDocs(membersQuery);
 
-    const teams: Team[] = [];
+    // Fetch parent team documents
+    const teamPromises = snapshot.docs.map(async (memberDoc) => {
+        const teamRef = memberDoc.ref.parent.parent;
+        if (!teamRef) return null;
 
-    for (const teamDoc of snapshot.docs) {
-        const memberRef = doc(db, `teams/${teamDoc.id}/members/${userId}`).withConverter(teamMemberConverter);
-        const memberSnapshot = await getDoc(memberRef);
+        const teamSnap = await getDoc(teamRef.withConverter(teamConverter));
+        return teamSnap.exists() ? teamSnap.data() : null;
+    });
 
-        if (memberSnapshot.exists() && memberSnapshot.data().status === 'active') {
-            teams.push(teamDoc.data());
-        }
-    }
-
-    return teams;
+    const teams = await Promise.all(teamPromises);
+    return teams.filter((t): t is Team => t !== null);
 }
 
 /**
@@ -129,15 +134,40 @@ export async function getTeamById(teamId: string): Promise<Team | null> {
 
 /**
  * Generate new invite link for a team
+ * Replaces old code and sets new 24h expiration
  */
-export async function generateInviteLink(teamId: string): Promise<string> {
+export async function regenerateInviteCode(teamId: string): Promise<string> {
     const code = generateInviteCode();
     const teamRef = doc(db, 'teams', teamId);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h validity
 
     await updateDoc(teamRef, {
         inviteCode: code,
+        inviteCodeExpiresAt: expiresAt,
         updatedAt: new Date(),
     });
 
     return code;
+}
+
+/**
+ * Get team by invite code
+ * Validates expiration
+ */
+export async function getTeamByInviteCode(code: string): Promise<Team | null> {
+    const teamsRef = collection(db, 'teams').withConverter(teamConverter);
+    const q = query(teamsRef, where('inviteCode', '==', code));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) return null;
+
+    const teamData = snapshot.docs[0].data();
+
+    // Check if expired
+    if (teamData.inviteCodeExpiresAt && teamData.inviteCodeExpiresAt < new Date()) {
+        console.warn('Invite code expired for team', teamData.id);
+        return null;
+    }
+
+    return { ...teamData, id: snapshot.docs[0].id };
 }

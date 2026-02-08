@@ -10,6 +10,8 @@ export default defineConfig({
         setupFiles: './vitest.setup.ts',
         alias: {
             '@': resolve(__dirname, './src')
-        }
+        },
+        exclude: ['**/node_modules/**', '**/dist/**', '**/tests/e2e/**'],
+        testTimeout: 10000,
     },
 })

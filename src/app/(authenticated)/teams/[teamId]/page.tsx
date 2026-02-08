@@ -9,6 +9,9 @@ import { getTeamById } from '@/lib/firebase/services/team.service';
 import { getTeamMember, getTeamMembers } from '@/lib/firebase/services/member.service';
 import { TeamChat } from '@/components/features/teams/TeamChat';
 import { MemberList } from '@/components/features/teams/MemberList';
+import InviteButton from '@/components/features/teams/InviteButton';
+import { TeamTabs, TeamTab } from '@/components/features/teams/TeamTabs';
+import { SharedList } from '@/components/features/teams/SharedList';
 import type { Team, TeamMember } from '@/types/domain/team.types';
 
 export default function TeamDetailPage() {
@@ -22,7 +25,7 @@ export default function TeamDetailPage() {
     const [members, setMembers] = useState<TeamMember[]>([]);
     const [currentMember, setCurrentMember] = useState<TeamMember | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'chat' | 'members'>('chat');
+    const [activeTab, setActiveTab] = useState<TeamTab>('chat');
     const [error, setError] = useState<string | null>(null);
 
     const loadTeamData = async () => {
@@ -141,7 +144,13 @@ export default function TeamDetailPage() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
+                        <InviteButton
+                            teamId={teamId}
+                            inviteCode={team.inviteCode}
+                            inviteCodeExpiresAt={team.inviteCodeExpiresAt}
+                            role={currentMember.role}
+                        />
                         <Link
                             href={`/teams/${teamId}/lists`}
                             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm flex items-center gap-2"
@@ -167,29 +176,7 @@ export default function TeamDetailPage() {
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="border-b border-gray-200 mb-6">
-                <nav className="flex gap-8">
-                    <button
-                        onClick={() => setActiveTab('chat')}
-                        className={`pb-4 px-1 border-b-2 transition ${activeTab === 'chat'
-                            ? 'border-blue-600 text-blue-600 font-medium'
-                            : 'border-transparent text-gray-600 hover:text-gray-800'
-                            }`}
-                    >
-                        Chat
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('members')}
-                        className={`pb-4 px-1 border-b-2 transition ${activeTab === 'members'
-                            ? 'border-blue-600 text-blue-600 font-medium'
-                            : 'border-transparent text-gray-600 hover:text-gray-800'
-                            }`}
-                    >
-                        Members
-                    </button>
-                </nav>
-            </div>
+            <TeamTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
             {/* Content */}
             {activeTab === 'chat' && (
@@ -198,6 +185,25 @@ export default function TeamDetailPage() {
                     currentUserId={user.uid}
                     currentUserName={userProfile.displayName || 'Anonymous'}
                 />
+            )}
+
+            {activeTab === 'lists' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <SharedList
+                        teamId={teamId}
+                        listType="todo"
+                        currentUserId={user.uid}
+                        title="Todo List"
+                        placeholder="Add a task..."
+                    />
+                    <SharedList
+                        teamId={teamId}
+                        listType="buy"
+                        currentUserId={user.uid}
+                        title="Shopping List"
+                        placeholder="Add item to buy..."
+                    />
+                </div>
             )}
 
             {activeTab === 'members' && (

@@ -184,6 +184,7 @@ export function SharedList({ teamId, listType, currentUserId, title, placeholder
                             >
                                 <button
                                     onClick={() => handleToggleComplete(item.id)}
+                                    aria-label={item.isCompleted ? `Mark "${item.content}" as incomplete` : `Mark "${item.content}" as complete`}
                                     className="mt-1 w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center hover:border-blue-500 transition flex-shrink-0"
                                 >
                                     {item.isCompleted && (
@@ -200,6 +201,7 @@ export function SharedList({ teamId, listType, currentUserId, title, placeholder
                                 </div>
                                 <button
                                     onClick={() => handleDeleteItem(item.id)}
+                                    aria-label={`Delete "${item.content}"`}
                                     className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition flex-shrink-0"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,6 +225,7 @@ export function SharedList({ teamId, listType, currentUserId, title, placeholder
                                 >
                                     <button
                                         onClick={() => handleToggleComplete(item.id)}
+                                        aria-label={`Mark "${item.content}" as incomplete`}
                                         className="mt-1 w-5 h-5 rounded border-2 border-green-500 flex items-center justify-center bg-green-500 flex-shrink-0"
                                     >
                                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -234,6 +237,7 @@ export function SharedList({ teamId, listType, currentUserId, title, placeholder
                                     </div>
                                     <button
                                         onClick={() => handleDeleteItem(item.id)}
+                                        aria-label={`Delete "${item.content}"`}
                                         className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition flex-shrink-0"
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebase';
 import { teamMemberConverter } from '../converters/team.converters';
 import type { TeamMember, TeamRole } from '@/types/domain/team.types';
+import { getTeamByInviteCode } from './team.service';
 
 /**
  * Request to join a team using invite code
@@ -172,4 +173,34 @@ export async function getTeamMember(teamId: string, userId: string): Promise<Tea
 export async function isTeamMember(teamId: string, userId: string): Promise<boolean> {
     const member = await getTeamMember(teamId, userId);
     return member !== null && member.status === 'active';
+}
+
+/**
+ * Join a team using invite code
+ * Validates code and expiration
+ * Grants 'active' status immediately
+ */
+export async function joinTeamWithInviteCode(
+    inviteCode: string,
+    userId: string,
+    displayName: string,
+    email?: string
+): Promise<{ teamId: string, status: 'active' }> {
+    const team = await getTeamByInviteCode(inviteCode);
+    if (!team) {
+        throw new Error('Invalid or expired invite code');
+    }
+
+    const memberRef = doc(db, `teams/${team.id}/members`, userId).withConverter(teamMemberConverter);
+
+    await setDoc(memberRef, {
+        uid: userId,
+        role: 'member',
+        status: 'active',
+        displayName,
+        email,
+        joinedAt: new Date(),
+    });
+
+    return { teamId: team.id, status: 'active' };
 }
