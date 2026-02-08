@@ -13,20 +13,20 @@ export function BottomNav() {
 
     const routes = [
         {
-            path: '/dashboard',
-            label: 'Dashboard',
+            path: '/karts',
+            label: 'Garage',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
             )
         },
         {
-            path: '/teams',
-            label: 'Teams',
+            path: '/shopping',
+            label: 'Shopping',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             )
         },
@@ -41,33 +41,33 @@ export function BottomNav() {
             )
         },
         {
-            path: '/sessions',
-            label: 'Sessions',
+            path: '/teams',
+            label: 'Teams',
             icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
             )
         }
     ];
 
     return (
-        <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe">
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-50 pb-safe">
             <div className="flex justify-around items-center h-16">
                 {routes.map((route) => (
                     <Link
                         key={route.path}
                         href={route.path}
-                        className={`flex flex-col items-center justify-center w-full h-full px-2 ${isActive(route.path) ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-700'
+                        className={`flex flex-col items-center justify-center w-full h-full px-2 ${isActive(route.path) ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'
                             }`}
                     >
                         {route.icon}
-                        <span className="text-xs mt-1">{route.label}</span>
+                        <span className="text-xs mt-1 font-medium">{route.label}</span>
                     </Link>
                 ))}
             </div>
-            {/* Safe area padding for newer iOS devices - handled by pb-safe in Tailwind if configured, else minimal padding */}
-            <div className="h-safe-area-bottom w-full bg-white"></div>
+            {/* Safe area padding for newer iOS devices */}
+            <div className="h-safe-area-bottom w-full bg-gray-900"></div>
         </div>
     );
 }

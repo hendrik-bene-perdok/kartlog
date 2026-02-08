@@ -102,5 +102,40 @@ service cloud.firestore {
                      (memberId == request.auth.uid || 
                       resource.data.uid == request.auth.uid);
     }
+    
+    // --- Kart Maintenance MVP Rules ---
+    // Note: 'local-user-001' check is for MVP testing only (bypassing Auth)
+    
+    // Karts: Users can read/write their own karts
+    match /karts/{kartId} {
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+      allow create: if (isAuthenticated() && request.resource.data.userId == request.auth.uid) || request.resource.data.userId == 'local-user-001';
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+    }
+
+    // Maintenance Tasks: Users can read/write tasks for their karts
+    match /maintenanceTasks/{taskId} {
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+      allow create: if (isAuthenticated() && request.resource.data.userId == request.auth.uid) || request.resource.data.userId == 'local-user-001';
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid) || (resource.data.userId == 'local-user-001' && request.resource.data.userId == 'local-user-001');
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+    }
+
+    // Shopping List Items: Users can read/write their own items
+    match /shoppingListItems/{itemId} {
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+      allow create: if (isAuthenticated() && request.resource.data.userId == request.auth.uid) || request.resource.data.userId == 'local-user-001';
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid) || (resource.data.userId == 'local-user-001' && request.resource.data.userId == 'local-user-001');
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+    }
+
+    // Session Logs: Users can read/write their own logs
+    match /sessionLogs/{logId} {
+      allow read: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+      allow create: if (isAuthenticated() && request.resource.data.userId == request.auth.uid) || request.resource.data.userId == 'local-user-001';
+      allow update: if (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid) || (resource.data.userId == 'local-user-001' && request.resource.data.userId == 'local-user-001');
+      allow delete: if (isAuthenticated() && resource.data.userId == request.auth.uid) || resource.data.userId == 'local-user-001';
+    }
   }
 }
