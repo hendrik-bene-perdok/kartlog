@@ -18,6 +18,7 @@ export interface Team {
     ownerId: string;
     members: Record<string, Role>;
     inviteCode?: string;
+    inviteCodeExpiresAt?: Timestamp;
     createdAt: Timestamp;
 }
 

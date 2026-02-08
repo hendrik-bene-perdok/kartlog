@@ -11,40 +11,96 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    function isTeamMember(teamId) {
-      let team = get(/databases/$(database)/documents/teams/$(teamId));
-      return team != null && (request.auth.uid in team.data.members);
+    // Check if user is an active member of a team
+    function isActiveMember(teamId) {
+      let memberDoc = get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+      return memberDoc != null && memberDoc.data.status == 'active';
     }
 
-    function isTeamAdmin(teamId) {
+    // Check if user is owner of a team
+    function isTeamOwner(teamId) {
       let team = get(/databases/$(database)/documents/teams/$(teamId));
-      return team != null && team.data.members[request.auth.uid] == 'owner';
+      return team != null && team.data.ownerId == request.auth.uid;
+    }
+
+    // Check if user is admin or owner
+    function isAdminOrOwner(teamId) {
+      let memberDoc = get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+      return memberDoc != null && 
+             memberDoc.data.status == 'active' && 
+             (memberDoc.data.role == 'admin' || memberDoc.data.role == 'owner');
     }
 
     // --- Users Collection ---
     match /users/{userId} {
       allow read, write: if isOwner(userId);
-      allow create: if isAuthenticated(); // For initial profile creation
+      allow create: if isAuthenticated();
     }
 
     // --- Teams Collection ---
     match /teams/{teamId} {
-      allow read: if isTeamMember(teamId);
+      // Allow reading if member OR if team has an active invite code (needed for invite links)
+      // Note: This makes team metadata (name, desc) visible to authenticated users if they can guess/query the code.
+      // Subcollections are still protected.
+      allow get: if isActiveMember(teamId) || (resource.data.inviteCode != null && resource.data.inviteCode != "");
+      allow list: if isActiveMember(teamId) || (resource.data.inviteCode != null && resource.data.inviteCode != "");
+      
       allow create: if isAuthenticated();
-      allow update: if isTeamAdmin(teamId);
-      allow delete: if isTeamAdmin(teamId);
+      allow update: if isAdminOrOwner(teamId);
+      allow delete: if isTeamOwner(teamId);
 
-      // --- Parts Sub-collection ---
+      // --- Members Sub-collection ---
+      match /members/{memberId} {
+        // Allow active members to read list, OR user to read their own status (pending/rejected)
+        allow read: if isActiveMember(teamId) || memberId == request.auth.uid;
+        
+        // Allow creating a join request (pending member) for oneself
+        // OR allow creator to add themselves as owner/active if they own the team
+        allow create: if isAuthenticated() && memberId == request.auth.uid && 
+          (
+            request.resource.data.status == 'pending' || 
+            (isTeamOwner(teamId) && request.resource.data.role == 'owner' && request.resource.data.status == 'active')
+          );
+        
+        // Only Admin/Owner can update members (approve, change role)
+        // Self-update removed to prevent self-approval
+        allow update: if isAdminOrOwner(teamId);
+        
+        // Allow Admin/Owner to remove members, OR user to leave (delete own doc)
+        allow delete: if isAdminOrOwner(teamId) || memberId == request.auth.uid;
+      }
+
+      // --- Lists Sub-collection ---
+      match /lists/{listId}/items/{itemId} {
+        allow read, write: if isActiveMember(teamId);
+      }
+
+      // --- Chat Sub-collection ---
+      match /chat/{messageId} {
+        allow read: if isActiveMember(teamId);
+        allow create: if isActiveMember(teamId);
+        allow delete: if isTeamOwner(teamId); // Only owner can delete messages
+      }
+
+      // --- Parts Sub-collection (existing) ---
       match /parts/{partId} {
-        allow read: if isTeamMember(teamId);
-        allow write: if isTeamMember(teamId); // Members can manage parts (Collaborative)
+        allow read: if isActiveMember(teamId);
+        allow write: if isActiveMember(teamId);
       }
 
-      // --- Sessions Sub-collection ---
+      // --- Sessions Sub-collection (existing) ---
       match /sessions/{sessionId} {
-        allow read: if isTeamMember(teamId);
-        allow write: if isTeamMember(teamId); // Members can log sessions
+        allow read: if isActiveMember(teamId);
+        allow write: if isActiveMember(teamId);
       }
+    }
+
+    // --- Collection Group Queries ---
+    // Allow users to query their own member documents across all teams
+    match /{path=**}/members/{memberId} {
+      allow read: if request.auth != null && 
+                     (memberId == request.auth.uid || 
+                      resource.data.uid == request.auth.uid);
     }
   }
 }
