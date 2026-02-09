@@ -61,7 +61,7 @@ export function validateFormData<T>(
  * @returns First error message
  */
 export function getFirstErrorMessage(error: z.ZodError): string {
-    const firstError = error.errors[0];
+    const firstError = error.issues[0];
     return firstError?.message || 'Validation failed';
 }
 
@@ -74,13 +74,12 @@ export function getFirstErrorMessage(error: z.ZodError): string {
 export function getErrorsByField(error: z.ZodError): Record<string, string[]> {
     const errorsByField: Record<string, string[]> = {};
 
-    for (const issue of error.errors) {
+    for (const issue of error.issues) {
         const field = issue.path.join('.');
         if (!errorsByField[field]) {
             errorsByField[field] = [];
         }
         errorsByField[field].push(issue.message);
     }
-
     return errorsByField;
 }

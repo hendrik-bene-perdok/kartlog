@@ -76,13 +76,13 @@ export function DeleteKartDialog({ kart, onClose, onDeleted }: DeleteKartDialogP
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="max-w-md w-full bg-gray-800 rounded-lg p-6 shadow-xl">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+            <div className="max-w-md w-full bg-white rounded-lg p-6 shadow-xl border border-app-border">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
                         <svg
-                            className="w-6 h-6 text-white"
+                            className="w-6 h-6 text-status-due"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -93,45 +93,45 @@ export function DeleteKartDialog({ kart, onClose, onDeleted }: DeleteKartDialogP
                             <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <h2 className="text-xl font-bold text-white">Delete {kart.name}?</h2>
+                    <h2 className="text-xl font-bold text-app-text">Delete {kart.name}?</h2>
                 </div>
 
                 {/* Warning message */}
-                <p className="text-gray-300 mb-4">
+                <p className="text-text-subtle mb-4">
                     This action cannot be undone. The following data will be permanently deleted:
                 </p>
 
                 {/* Data summary */}
-                <div className="bg-gray-900 rounded-lg p-4 mb-4 space-y-2">
+                <div className="bg-app-bg rounded-lg p-4 mb-4 space-y-2 border border-app-border">
                     <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Kart information</span>
-                        <span className="text-white font-medium">1 kart</span>
+                        <span className="text-text-subtle">Kart information</span>
+                        <span className="text-app-text font-medium">1 kart</span>
                     </div>
                     {counts && (
                         <>
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-400">Session logs</span>
-                                <span className="text-white font-medium">{counts.sessions} sessions</span>
+                                <span className="text-text-subtle">Session logs</span>
+                                <span className="text-app-text font-medium">{counts.sessions} sessions</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-400">Maintenance tasks</span>
-                                <span className="text-white font-medium">{counts.tasks} tasks</span>
+                                <span className="text-text-subtle">Maintenance tasks</span>
+                                <span className="text-app-text font-medium">{counts.tasks} tasks</span>
                             </div>
                         </>
                     )}
                     {!counts && (
-                        <div className="text-sm text-gray-500">Loading data...</div>
+                        <div className="text-sm text-text-subtle">Loading data...</div>
                     )}
-                    <div className="border-t border-gray-700 pt-2 flex justify-between text-sm font-bold">
-                        <span className="text-gray-300">Total engine hours</span>
-                        <span className="text-white">{kart.totalEngineHours.toFixed(1)}h</span>
+                    <div className="border-t border-app-border pt-2 flex justify-between text-sm font-bold">
+                        <span className="text-text-subtle">Total engine hours</span>
+                        <span className="text-app-text">{kart.totalEngineHours.toFixed(1)}h</span>
                     </div>
                 </div>
 
                 {/* Error message */}
                 {error && (
-                    <div className="bg-red-900 border border-red-600 rounded-lg p-3 mb-4">
-                        <p className="text-sm text-red-200">{error}</p>
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                        <p className="text-sm text-red-600">{error}</p>
                     </div>
                 )}
 

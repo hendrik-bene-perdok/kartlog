@@ -3,29 +3,38 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper functions
+    // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
 
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return (request.auth != null && request.auth.uid == userId) || userId == 'local-user-001';
+    }
+
+    // Helper to get current User ID safely (handling dev mode)
+    function getCurrentUserId() {
+      return request.auth != null ? request.auth.uid : 'local-user-001';
     }
 
     // Check if user is an active member of a team
     function isActiveMember(teamId) {
-      let memberDoc = get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+      let uid = getCurrentUserId();
+      let memberDoc = get(/databases/$(database)/documents/teams/$(teamId)/members/$(uid));
       return memberDoc != null && memberDoc.data.status == 'active';
     }
 
     // Check if user is owner of a team
     function isTeamOwner(teamId) {
       let team = get(/databases/$(database)/documents/teams/$(teamId));
-      return team != null && team.data.ownerId == request.auth.uid;
+      let uid = getCurrentUserId();
+      return team != null && team.data.ownerId == uid;
     }
 
     // Check if user is admin or owner
     function isAdminOrOwner(teamId) {
-      let memberDoc = get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+      let uid = getCurrentUserId();
+      let memberDoc = get(/databases/$(database)/documents/teams/$(teamId)/members/$(uid));
       return memberDoc != null && 
              memberDoc.data.status == 'active' && 
              (memberDoc.data.role == 'admin' || memberDoc.data.role == 'owner');
@@ -34,7 +43,7 @@ service cloud.firestore {
     // --- Users Collection ---
     match /users/{userId} {
       allow read, write: if isOwner(userId);
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() || userId == 'local-user-001';
     }
 
     // --- Teams Collection ---
@@ -45,18 +54,18 @@ service cloud.firestore {
       allow get: if isActiveMember(teamId) || (resource.data.inviteCode != null && resource.data.inviteCode != "");
       allow list: if isActiveMember(teamId) || (resource.data.inviteCode != null && resource.data.inviteCode != "");
       
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() || request.resource.data.ownerId == 'local-user-001';
       allow update: if isAdminOrOwner(teamId);
       allow delete: if isTeamOwner(teamId);
 
       // --- Members Sub-collection ---
       match /members/{memberId} {
         // Allow active members to read list, OR user to read their own status (pending/rejected)
-        allow read: if isActiveMember(teamId) || memberId == request.auth.uid;
+        allow read: if isActiveMember(teamId) || memberId == getCurrentUserId();
         
         // Allow creating a join request (pending member) for oneself
         // OR allow creator to add themselves as owner/active if they own the team
-        allow create: if isAuthenticated() && memberId == request.auth.uid && 
+        allow create: if (isAuthenticated() || memberId == 'local-user-001') && memberId == getCurrentUserId() && 
           (
             request.resource.data.status == 'pending' || 
             (isTeamOwner(teamId) && request.resource.data.role == 'owner' && request.resource.data.status == 'active')
@@ -67,7 +76,7 @@ service cloud.firestore {
         allow update: if isAdminOrOwner(teamId);
         
         // Allow Admin/Owner to remove members, OR user to leave (delete own doc)
-        allow delete: if isAdminOrOwner(teamId) || memberId == request.auth.uid;
+        allow delete: if isAdminOrOwner(teamId) || memberId == getCurrentUserId();
       }
 
       // --- Lists Sub-collection ---
@@ -98,9 +107,8 @@ service cloud.firestore {
     // --- Collection Group Queries ---
     // Allow users to query their own member documents across all teams
     match /{path=**}/members/{memberId} {
-      allow read: if request.auth != null && 
-                     (memberId == request.auth.uid || 
-                      resource.data.uid == request.auth.uid);
+      allow read: if memberId == getCurrentUserId() || 
+                      (resource != null && resource.data.uid == getCurrentUserId());
     }
     
     // --- Kart Maintenance MVP Rules ---

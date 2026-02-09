@@ -38,9 +38,9 @@ export function TouchButton({
     const baseClasses = 'min-w-[48px] min-h-[48px] touch-manipulation rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variantClasses = {
-        primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-        secondary: 'bg-gray-700 hover:bg-gray-600 text-gray-100 focus:ring-gray-500',
-        danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+        primary: 'bg-primary hover:bg-blue-600 text-white focus:ring-primary shadow-sm',
+        secondary: 'bg-white border border-app-border hover:bg-gray-50 text-app-text focus:ring-gray-400 shadow-sm',
+        danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm',
     };
 
     const sizeClasses = {

@@ -35,6 +35,7 @@ export interface Kart {
     userId: string;
     name: string;                    // e.g., "Kart #17", "Kart #80"
     totalEngineHours: number;        // Computed from session logs
+    manualAccessUrl?: string;        // Optional URL to manufacturer's manual
     thresholds: MaintenanceThreshold[];
     createdAt: Timestamp;
     updatedAt: Timestamp;
@@ -125,6 +126,7 @@ export const kartSchema = z.object({
     userId: z.string().min(1),
     name: z.string().min(1, 'Kart name required').max(50, 'Name too long'),
     totalEngineHours: z.number().nonnegative('Hours cannot be negative'),
+    manualAccessUrl: z.string().url('Invalid URL').optional(),
     thresholds: z.array(maintenanceThresholdSchema).min(1, 'At least one threshold required'),
     createdAt: z.instanceof(Timestamp),
     updatedAt: z.instanceof(Timestamp),

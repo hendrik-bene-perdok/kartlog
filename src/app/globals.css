@@ -10,6 +10,17 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Reference Design System Tokens */
+  --color-primary: #3B82F6;
+  --color-app-bg: #F5F7FA;
+  --color-app-text: #1F2937;
+  --color-app-border: #E5E7EB;
+  --color-app-card: #FFFFFF;
+  --color-status-due: #EF4444;
+  --color-status-good: #22C55E;
+  --color-status-stat: #0EA5E9;
+  --color-text-subtle: #6B7280;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -52,13 +52,13 @@ export function BottomNav() {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-50 pb-safe">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-app-border z-50 pb-safe">
             <div className="flex justify-around items-center h-16">
                 {routes.map((route) => (
                     <Link
                         key={route.path}
                         href={route.path}
-                        className={`flex flex-col items-center justify-center w-full h-full px-2 ${isActive(route.path) ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'
+                        className={`flex flex-col items-center justify-center w-full h-full px-2 ${isActive(route.path) ? 'text-primary' : 'text-text-subtle hover:text-primary'
                             }`}
                     >
                         {route.icon}
@@ -67,7 +67,7 @@ export function BottomNav() {
                 ))}
             </div>
             {/* Safe area padding for newer iOS devices */}
-            <div className="h-safe-area-bottom w-full bg-gray-900"></div>
+            <div className="h-safe-area-bottom w-full bg-white"></div>
         </div>
     );
 }

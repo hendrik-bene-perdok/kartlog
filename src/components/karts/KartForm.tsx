@@ -58,7 +58,7 @@ export function KartForm({ onSubmit, onCancel, loading = false }: KartFormProps)
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label htmlFor="kart-name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="kart-name" className="block text-sm font-medium text-text-subtle mb-2">
                     Kart Name
                 </label>
                 <input
@@ -67,7 +67,7 @@ export function KartForm({ onSubmit, onCancel, loading = false }: KartFormProps)
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g., Kart #17"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg touch-manipulation"
+                    className="w-full px-4 py-3 bg-white border border-app-border rounded-lg text-app-text placeholder-text-subtle focus:outline-none focus:ring-2 focus:ring-primary text-lg touch-manipulation"
                     disabled={loading}
                     autoFocus
                 />

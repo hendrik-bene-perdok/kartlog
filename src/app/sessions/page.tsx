@@ -13,23 +13,23 @@ export default function SessionsPage() {
             <MainLayout>
                 <div className="space-y-6">
                     <div className="flex justify-between items-center">
-                        <h1 className="text-2xl font-bold text-gray-900">Sessions History</h1>
+                        <h1 className="text-2xl font-bold text-app-text">Sessions History</h1>
                         <Link
                             href="/sessions/new"
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-600 transition-colors"
                         >
                             Log Session
                         </Link>
                     </div>
 
                     {loading ? (
-                        <div className="text-center py-10">Loading sessions...</div>
+                        <div className="text-center py-10 text-app-text">Loading sessions...</div>
                     ) : sessions.length === 0 ? (
-                        <div className="text-center py-10 bg-white rounded-lg shadow">
-                            <p className="text-gray-500 mb-4">No sessions logged yet. Start tracking your track days!</p>
+                        <div className="text-center py-10 bg-white border border-app-border rounded-lg shadow-sm">
+                            <p className="text-text-subtle mb-4">No sessions logged yet. Start tracking your track days!</p>
                             <Link
                                 href="/sessions/new"
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-blue-50 hover:bg-blue-100 transition-colors"
                             >
                                 Log First Session
                             </Link>

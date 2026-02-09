@@ -61,7 +61,7 @@ export function AddShoppingItemForm({ onSubmit, onCancel }: AddShoppingItemFormP
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Part or item description"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                className="w-full px-4 py-3 bg-white border border-app-border rounded-lg text-app-text placeholder-text-subtle focus:outline-none focus:ring-2 focus:ring-primary"
                 required
             />
 

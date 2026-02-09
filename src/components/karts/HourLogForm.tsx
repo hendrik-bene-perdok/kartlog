@@ -72,7 +72,7 @@ export function HourLogForm({ onSubmit, onCancel, loading = false }: HourLogForm
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Duration Input */}
             <div>
-                <label htmlFor="duration" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="duration" className="block text-sm font-medium text-app-text mb-2">
                     Session Duration (minutes)
                 </label>
                 <input
@@ -82,20 +82,20 @@ export function HourLogForm({ onSubmit, onCancel, loading = false }: HourLogForm
                     value={durationMinutes}
                     onChange={(e) => setDurationMinutes(e.target.value)}
                     placeholder="45"
-                    className="w-full px-6 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-3xl font-bold text-center touch-manipulation"
+                    className="w-full px-6 py-4 bg-white border border-app-border rounded-lg text-app-text placeholder-text-subtle focus:outline-none focus:ring-2 focus:ring-primary text-3xl font-bold text-center touch-manipulation shadow-sm"
                     disabled={loading}
                     min="1"
                     max="1440"
                     autoFocus
                 />
                 {error && (
-                    <p className="mt-2 text-sm text-red-400">{error}</p>
+                    <p className="mt-2 text-sm text-status-due">{error}</p>
                 )}
             </div>
 
             {/* Quick Presets */}
             <div>
-                <p className="text-sm font-medium text-gray-300 mb-3">Quick Presets</p>
+                <p className="text-sm font-medium text-app-text mb-3">Quick Presets</p>
                 <div className="grid grid-cols-4 gap-3">
                     {[15, 30, 45, 60].map((minutes) => (
                         <TouchButton
@@ -137,7 +137,7 @@ export function HourLogForm({ onSubmit, onCancel, loading = false }: HourLogForm
 
             {/* Notes Input */}
             <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="notes" className="block text-sm font-medium text-app-text mb-2">
                     Notes (optional)
                 </label>
                 <textarea
@@ -146,11 +146,11 @@ export function HourLogForm({ onSubmit, onCancel, loading = false }: HourLogForm
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="e.g., Great lap times today!"
                     rows={3}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base touch-manipulation resize-none"
+                    className="w-full px-4 py-3 bg-white border border-app-border rounded-lg text-app-text placeholder-text-subtle focus:outline-none focus:ring-2 focus:ring-primary text-base touch-manipulation resize-none shadow-sm"
                     disabled={loading}
                     maxLength={200}
                 />
-                <p className="mt-1 text-xs text-gray-500 text-right">
+                <p className="mt-1 text-xs text-text-subtle text-right">
                     {notes.length}/200 characters
                 </p>
             </div>
@@ -181,7 +181,7 @@ export function HourLogForm({ onSubmit, onCancel, loading = false }: HourLogForm
             </div>
 
             {/* Info Text */}
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-text-subtle text-center">
                 Hours will be automatically added to your kart's total engine hours.
                 Maintenance tasks will be created when thresholds are reached.
             </p>

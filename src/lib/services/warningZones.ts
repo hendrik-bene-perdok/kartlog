@@ -91,9 +91,9 @@ export function hasYellowWarning(kart: Kart): boolean {
  * 
  * Returns zones in yellow or red state
  */
-export function getWarningZonesNeedingTasks(kart: Kart): WarningZoneStatus[] {
+export function getWarningZonesNeedingTasks(kart: Kart): (WarningZoneStatus & { zone: 'yellow' | 'red' })[] {
     const zones = evaluateWarningZones(kart);
-    return zones.filter(z => z.zone === 'yellow' || z.zone === 'red');
+    return zones.filter((z): z is WarningZoneStatus & { zone: 'yellow' | 'red' } => z.zone === 'yellow' || z.zone === 'red');
 }
 
 /**

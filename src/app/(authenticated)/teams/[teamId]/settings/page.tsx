@@ -103,7 +103,7 @@ export default function TeamSettingsPage() {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="text-center py-12">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
             </div>
         );
@@ -113,10 +113,10 @@ export default function TeamSettingsPage() {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="text-center py-12">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Team Not Found</h2>
+                    <h2 className="text-2xl font-bold text-app-text mb-4">Team Not Found</h2>
                     <button
                         onClick={() => router.push('/teams')}
-                        className="text-blue-600 hover:underline"
+                        className="text-primary hover:underline"
                     >
                         Back to Teams
                     </button>
@@ -128,11 +128,11 @@ export default function TeamSettingsPage() {
     const isOwner = user && team.ownerId === user.uid;
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="container mx-auto px-4 py-8 max-w-2xl text-app-text">
             <div className="mb-6">
                 <button
                     onClick={() => router.push(`/teams/${teamId}`)}
-                    className="text-blue-600 hover:underline flex items-center gap-2 mb-4"
+                    className="text-primary hover:underline flex items-center gap-2 mb-4"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -140,7 +140,7 @@ export default function TeamSettingsPage() {
                     Back to Team
                 </button>
                 <h1 className="text-3xl font-bold">Team Settings</h1>
-                <p className="text-gray-600 mt-2">{team.name}</p>
+                <p className="text-text-subtle mt-2">{team.name}</p>
             </div>
 
             {error && (
@@ -150,12 +150,12 @@ export default function TeamSettingsPage() {
             )}
 
             {/* Update Team Form */}
-            <form onSubmit={handleSave} className="bg-white border rounded-lg p-6 mb-6">
-                <h2 className="text-xl font-semibold mb-4">Team Details</h2>
+            <form onSubmit={handleSave} className="bg-white border border-app-border rounded-lg p-6 mb-6 shadow-sm">
+                <h2 className="text-xl font-semibold mb-4 text-app-text">Team Details</h2>
 
                 <div className="space-y-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium mb-2">
+                        <label htmlFor="name" className="block text-sm font-medium mb-2 text-app-text">
                             Team Name *
                         </label>
                         <input
@@ -164,7 +164,7 @@ export default function TeamSettingsPage() {
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-app-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-app-text"
                             disabled={!isOwner}
                             minLength={3}
                             maxLength={50}
@@ -172,14 +172,14 @@ export default function TeamSettingsPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="description" className="block text-sm font-medium mb-2">
+                        <label htmlFor="description" className="block text-sm font-medium mb-2 text-app-text">
                             Description
                         </label>
                         <textarea
                             id="description"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-app-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-app-text"
                             rows={4}
                             disabled={!isOwner}
                             maxLength={200}
@@ -190,7 +190,7 @@ export default function TeamSettingsPage() {
                         <button
                             type="submit"
                             disabled={saving}
-                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 transition"
+                            className="w-full bg-primary text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300 transition shadow-sm"
                         >
                             {saving ? 'Saving...' : 'Save Changes'}
                         </button>

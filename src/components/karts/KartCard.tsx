@@ -44,57 +44,49 @@ export function KartCard({
     const { warningColor, highestPriorityZone, zones } = useMaintenanceThresholds(kart);
 
     const colorClasses = {
-        green: 'border-green-600 bg-green-950',
-        yellow: 'border-yellow-600 bg-yellow-950',
-        red: 'border-red-600 bg-red-950',
+        green: 'border-status-good bg-white hover:bg-green-50 shadow-sm ring-1 ring-status-good/20',
+        yellow: 'border-yellow-500 bg-white hover:bg-yellow-50 shadow-sm ring-1 ring-yellow-500/20',
+        red: 'border-status-due bg-white hover:bg-red-50 shadow-sm ring-1 ring-status-due/20',
     };
 
     const indicatorClasses = {
-        green: 'bg-green-600',
-        yellow: 'bg-yellow-600',
-        red: 'bg-red-600',
+        green: 'bg-status-good',
+        yellow: 'bg-yellow-500',
+        red: 'bg-status-due',
     };
 
-    const CardWrapper = onClick ? 'button' : Link;
-    const cardProps = onClick
-        ? { onClick, type: 'button' as const, className: 'w-full text-left' }
-        : { href: `/karts/${kart.id}` };
-
-    return (
-        <CardWrapper
-            {...cardProps}
-            className={`block min-h-[120px] rounded-lg border-2 ${colorClasses[warningColor]} p-4 transition-all hover:scale-[1.02] touch-manipulation relative`}
-        >
+    const content = (
+        <>
             {/* Warning indicator dot */}
             <div className={`absolute top-4 right-4 w-4 h-4 rounded-full ${indicatorClasses[warningColor]}`} />
 
             {/* Pending task badge */}
             {pendingTaskCount > 0 && (
-                <div className="absolute top-4 right-12 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                <div className="absolute top-4 right-12 bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
                     {pendingTaskCount}
                 </div>
             )}
 
             {/* Kart name */}
-            <h3 className="text-xl font-bold text-white mb-2 pr-16">{kart.name}</h3>
+            <h3 className="text-xl font-bold text-app-text mb-2 pr-16">{kart.name}</h3>
 
             {/* Engine hours */}
             <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-3xl font-bold text-white">
+                <span className="text-3xl font-bold text-app-text">
                     {kart.totalEngineHours.toFixed(1)}
                 </span>
-                <span className="text-gray-400 text-sm">hours logged</span>
+                <span className="text-text-subtle text-sm">hours logged</span>
             </div>
 
             {/* Warning zones summary */}
             {highestPriorityZone && highestPriorityZone.zone !== 'green' && (
                 <div className="flex flex-col gap-1">
-                    <div className="text-sm font-medium text-white">
+                    <div className="text-sm font-medium text-app-text">
                         {highestPriorityZone.thresholdType}
                     </div>
-                    <div className="text-xs text-gray-300">
+                    <div className="text-xs text-text-subtle">
                         {highestPriorityZone.zone === 'red' ? (
-                            <span className="font-bold text-red-400">Due now</span>
+                            <span className="font-bold text-status-due">Due now</span>
                         ) : (
                             <span>
                                 Due in {formatHoursRemaining(highestPriorityZone.hoursUntilRed)}
@@ -106,17 +98,33 @@ export function KartCard({
 
             {/* All zones green */}
             {highestPriorityZone?.zone === 'green' && (
-                <div className="text-sm text-green-400 font-medium">
+                <div className="text-sm text-status-good font-medium">
                     All maintenance up to date
                 </div>
             )}
 
             {/* Last session date */}
             {lastSessionDate && (
-                <div className="text-xs text-gray-500 mt-2">
+                <div className="text-xs text-text-subtle mt-2">
                     Last session: {lastSessionDate.toLocaleDateString()}
                 </div>
             )}
-        </CardWrapper>
+        </>
+    );
+
+    const baseClasses = `block min-h-[120px] rounded-lg border ${colorClasses[warningColor]} p-4 transition-all hover:scale-[1.02] touch-manipulation relative text-left w-full`;
+
+    if (onClick) {
+        return (
+            <button type="button" onClick={onClick} className={baseClasses}>
+                {content}
+            </button>
+        );
+    }
+
+    return (
+        <Link href={`/karts/${kart.id}`} className={baseClasses}>
+            {content}
+        </Link>
     );
 }

@@ -5,7 +5,8 @@ import type {
     FirestoreDataConverter,
     QueryDocumentSnapshot,
     DocumentData,
-    Timestamp
+    Timestamp,
+    WithFieldValue
 } from 'firebase/firestore';
 import type { Team, TeamMember, ListItem, ChatMessage } from '@/types/domain/team.types';
 
@@ -14,10 +15,11 @@ const timestampToDate = (timestamp: Timestamp): Date => timestamp.toDate();
 
 // Team Converter
 export const teamConverter: FirestoreDataConverter<Team> = {
-    toFirestore(team: Partial<Team>): DocumentData {
+    toFirestore(team: WithFieldValue<Team>): DocumentData {
+        const { id, ...data } = team as any; // Allow FieldValue access
         return {
-            ...team,
-            createdAt: team.createdAt || new Date(),
+            ...data,
+            createdAt: data.createdAt || new Date(),
             updatedAt: new Date(),
         };
     },
@@ -38,10 +40,11 @@ export const teamConverter: FirestoreDataConverter<Team> = {
 
 // TeamMember Converter
 export const teamMemberConverter: FirestoreDataConverter<TeamMember> = {
-    toFirestore(member: Partial<TeamMember>): DocumentData {
+    toFirestore(member: WithFieldValue<TeamMember>): DocumentData {
+        const { uid, ...data } = member as any;
         return {
-            ...member,
-            joinedAt: member.joinedAt || new Date(),
+            ...data,
+            joinedAt: data.joinedAt || new Date(),
         };
     },
     fromFirestore(snapshot: QueryDocumentSnapshot): TeamMember {
@@ -59,10 +62,11 @@ export const teamMemberConverter: FirestoreDataConverter<TeamMember> = {
 
 // ListItem Converter
 export const listItemConverter: FirestoreDataConverter<ListItem> = {
-    toFirestore(item: Partial<ListItem>): DocumentData {
+    toFirestore(item: WithFieldValue<ListItem>): DocumentData {
+        const { id, ...data } = item as any;
         return {
-            ...item,
-            createdAt: item.createdAt || new Date(),
+            ...data,
+            createdAt: data.createdAt || new Date(),
         };
     },
     fromFirestore(snapshot: QueryDocumentSnapshot): ListItem {
@@ -79,10 +83,11 @@ export const listItemConverter: FirestoreDataConverter<ListItem> = {
 
 // ChatMessage Converter
 export const chatMessageConverter: FirestoreDataConverter<ChatMessage> = {
-    toFirestore(message: Partial<ChatMessage>): DocumentData {
+    toFirestore(message: WithFieldValue<ChatMessage>): DocumentData {
+        const { id, ...data } = message as any;
         return {
-            ...message,
-            timestamp: message.timestamp || new Date(),
+            ...data,
+            timestamp: data.timestamp || new Date(),
         };
     },
     fromFirestore(snapshot: QueryDocumentSnapshot): ChatMessage {
