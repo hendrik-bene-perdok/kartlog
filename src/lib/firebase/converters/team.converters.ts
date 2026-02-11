@@ -14,7 +14,7 @@ const timestampToDate = (timestamp: Timestamp): Date => timestamp.toDate();
 
 // Team Converter
 export const teamConverter: FirestoreDataConverter<Team> = {
-    toFirestore(team: Partial<Team>): DocumentData {
+    toFirestore(team): DocumentData {
         return {
             ...team,
             createdAt: team.createdAt || new Date(),
@@ -38,7 +38,7 @@ export const teamConverter: FirestoreDataConverter<Team> = {
 
 // TeamMember Converter
 export const teamMemberConverter: FirestoreDataConverter<TeamMember> = {
-    toFirestore(member: Partial<TeamMember>): DocumentData {
+    toFirestore(member): DocumentData {
         return {
             ...member,
             joinedAt: member.joinedAt || new Date(),
@@ -59,7 +59,7 @@ export const teamMemberConverter: FirestoreDataConverter<TeamMember> = {
 
 // ListItem Converter
 export const listItemConverter: FirestoreDataConverter<ListItem> = {
-    toFirestore(item: Partial<ListItem>): DocumentData {
+    toFirestore(item): DocumentData {
         return {
             ...item,
             createdAt: item.createdAt || new Date(),
@@ -79,7 +79,7 @@ export const listItemConverter: FirestoreDataConverter<ListItem> = {
 
 // ChatMessage Converter
 export const chatMessageConverter: FirestoreDataConverter<ChatMessage> = {
-    toFirestore(message: Partial<ChatMessage>): DocumentData {
+    toFirestore(message): DocumentData {
         return {
             ...message,
             timestamp: message.timestamp || new Date(),

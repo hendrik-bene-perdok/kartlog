@@ -1,0 +1,42 @@
+"use client";
+import { useSessions } from "@/hooks/useSessions";
+import SessionItem from "@/components/sessions/SessionItem";
+import Link from "next/link";
+
+export default function SessionsPage() {
+    const { sessions, loading } = useSessions();
+
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-900">Sessions History</h1>
+                <Link
+                    href="/app/sessions/new"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                    Log Session
+                </Link>
+            </div>
+
+            {loading ? (
+                <div className="text-center py-10">Loading sessions...</div>
+            ) : sessions.length === 0 ? (
+                <div className="text-center py-10 bg-white rounded-lg shadow">
+                    <p className="text-gray-500 mb-4">No sessions logged yet. Start tracking your track days!</p>
+                    <Link
+                        href="/app/sessions/new"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                    >
+                        Log First Session
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {sessions.map((session) => (
+                        <SessionItem key={session.id} session={session} />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}

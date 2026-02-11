@@ -30,7 +30,7 @@ export {
     type UpdateThresholdInput,
 } from '@/types/maintenance';
 
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
 /**
  * Additional validation helper: Parse and validate form data
@@ -42,7 +42,7 @@ import { z } from 'zod';
 export function validateFormData<T>(
     schema: z.ZodSchema<T>,
     data: unknown
-): { success: true; data: T } | { success: false; errors: z.ZodError } {
+): { success: true; data: T } | { success: false; errors: ZodError } {
     const result = schema.safeParse(data);
 
     if (result.success) {
@@ -60,8 +60,8 @@ export function validateFormData<T>(
  * @param error - Zod validation error
  * @returns First error message
  */
-export function getFirstErrorMessage(error: z.ZodError): string {
-    const firstError = error.errors[0];
+export function getFirstErrorMessage(error: ZodError): string {
+    const firstError = (error as any).errors[0];
     return firstError?.message || 'Validation failed';
 }
 
@@ -71,10 +71,10 @@ export function getFirstErrorMessage(error: z.ZodError): string {
  * @param error - Zod validation error
  * @returns Map of field names to error messages
  */
-export function getErrorsByField(error: z.ZodError): Record<string, string[]> {
+export function getErrorsByField(error: ZodError): Record<string, string[]> {
     const errorsByField: Record<string, string[]> = {};
 
-    for (const issue of error.errors) {
+    for (const issue of (error as any).errors) {
         const field = issue.path.join('.');
         if (!errorsByField[field]) {
             errorsByField[field] = [];

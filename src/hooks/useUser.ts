@@ -25,6 +25,9 @@ export function useUser() {
                     setProfile(null);
                 }
                 setLoading(false);
+            }, (error) => {
+                console.error("Error fetching user profile:", error);
+                setLoading(false);
             });
             return () => unsub();
         }

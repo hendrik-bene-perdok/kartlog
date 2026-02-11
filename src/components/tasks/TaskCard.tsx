@@ -21,14 +21,13 @@ export function TaskCard({ task, onComplete, onDelete }: TaskCardProps) {
     const priorityColors = {
         High: 'border-l-red-600',
         Medium: 'border-l-yellow-600',
+        Low: 'border-l-green-600',
     };
 
     return (
         <SwipeableCard
             onSwipeRight={onComplete}
             onSwipeLeft={onDelete}
-            leftColor="green"
-            rightColor="red"
         >
             <div className={`border-l-4 ${priorityColors[task.priority]} pl-3`}>
                 <div className="flex justify-between items-start">

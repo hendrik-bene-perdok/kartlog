@@ -3,6 +3,7 @@
  * Feature: 004-maintenance-core
  * 
  * React hook for managing session logs with auto-task generation integration
+ * Refactored for Team Ownership
  */
 
 'use client';
@@ -26,28 +27,15 @@ interface UseSessionLogsReturn {
     lastSession: SessionLog | null;
 }
 
-/**
- * Hook for managing session logs for a kart
- * 
- * Features:
- * - Automatic loading on mount
- * - Auto-task generation after session creation
- * - Optimistic UI updates
- * - Error handling
- * 
- * CRITICAL: This hook triggers auto-task generation after every session log
- * to ensure maintenance tasks are created when thresholds are crossed
- * 
- * @param kartId - Kart ID to load sessions for
- * @returns Session logs state and create operation
- */
-export function useSessionLogs(kartId: string): UseSessionLogsReturn {
+export function useSessionLogs(teamId: string, kartId: string): UseSessionLogsReturn {
     const [sessions, setSessions] = useState<SessionLog[]>([]);
     const [lastSession, setLastSession] = useState<SessionLog | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     const fetchSessions = async () => {
+        if (!teamId || !kartId) return;
+
         try {
             setLoading(true);
             setError(null);
@@ -67,29 +55,27 @@ export function useSessionLogs(kartId: string): UseSessionLogsReturn {
     };
 
     useEffect(() => {
-        if (kartId) {
-            fetchSessions();
-        }
-    }, [kartId]);
+        fetchSessions();
+    }, [teamId, kartId]);
 
     const createSessionLog = async (durationMinutes: number, notes?: string): Promise<SessionLog> => {
         try {
             // Create session log (transaction updates kart hours atomically)
-            const newSession = await createSessionLogRepo(kartId, durationMinutes, notes);
+            // Now requires teamId to find the kart
+            const newSession = await createSessionLogRepo(teamId, kartId, durationMinutes, notes);
 
             // Optimistic update
             setSessions(prev => [newSession, ...prev]);
             setLastSession(newSession);
 
             // CRITICAL: Check and create auto-tasks after session logged
-            // This ensures maintenance tasks are generated when thresholds crossed
             try {
-                const updatedKart = await getKart(kartId);
+                // getKart now requires teamId
+                const updatedKart = await getKart(teamId, kartId);
                 if (updatedKart) {
                     await checkAndCreateAutoTasks(updatedKart);
                 }
             } catch (autoTaskError) {
-                // Don't fail session creation if auto-task fails
                 console.error('Auto-task generation failed:', autoTaskError);
             }
 

@@ -23,7 +23,7 @@ export function TeamList({ teams }: TeamListProps) {
             {teams.map((team) => (
                 <button
                     key={team.id}
-                    onClick={() => router.push(`/teams/${team.id}`)}
+                    onClick={() => router.push(`/app/teams/${team.id}`)}
                     className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-blue-500 hover:shadow-lg transition-all text-left group"
                 >
                     {/* Team Header */}

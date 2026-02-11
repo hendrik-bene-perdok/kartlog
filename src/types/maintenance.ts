@@ -32,10 +32,11 @@ export interface MaintenanceThreshold {
  */
 export interface Kart {
     id: string;
-    userId: string;
+    teamId: string;                  // Changed from userId
     name: string;                    // e.g., "Kart #17", "Kart #80"
     totalEngineHours: number;        // Computed from session logs
     thresholds: MaintenanceThreshold[];
+    manualAccessUrl?: string;        // Optional URL to manufacturer manual
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }
@@ -60,7 +61,7 @@ export interface SessionLog {
 export interface MaintenanceTask {
     id: string;
     kartId: string;
-    userId: string;
+    teamId: string;                  // Changed from userId
     description: string;
     priority: 'High' | 'Medium' | 'Low';
     status: 'pending' | 'completed';
@@ -76,7 +77,7 @@ export interface MaintenanceTask {
 export interface ShoppingListItem {
     id: string;
     kartId?: string;                 // Optional kart association
-    userId: string;
+    teamId: string;                  // Changed from userId
     description: string;
     photoId?: string;                // Reference to IndexedDB photo
     status: 'active' | 'ordered' | 'archived';
@@ -122,10 +123,11 @@ export const maintenanceThresholdSchema = z.object({
  */
 export const kartSchema = z.object({
     id: z.string().uuid(),
-    userId: z.string().min(1),
+    teamId: z.string().min(1),
     name: z.string().min(1, 'Kart name required').max(50, 'Name too long'),
     totalEngineHours: z.number().nonnegative('Hours cannot be negative'),
     thresholds: z.array(maintenanceThresholdSchema).min(1, 'At least one threshold required'),
+    manualAccessUrl: z.string().url('Must be a valid URL').optional(),
     createdAt: z.instanceof(Timestamp),
     updatedAt: z.instanceof(Timestamp),
 });

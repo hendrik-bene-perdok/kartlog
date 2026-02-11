@@ -2,7 +2,8 @@
  * ShoppingListItem Repository
  * Feature: 004-maintenance-core
  * 
- * Firestore CRUD operations for shopping list items with archive queries
+ * Firestore CRUD operations for shopping list items with duplicate prevention
+ * Refactored for Team Ownership
  */
 
 import {
@@ -15,33 +16,34 @@ import {
     query,
     where,
     orderBy,
-    Timestamp
+    Timestamp,
+    collectionGroup
 } from 'firebase/firestore';
-import { db, getCurrentUserId } from '../firebase/init';
+import { db } from '../firebase/init';
 import type { ShoppingListItem } from '@/types/maintenance';
 
-const SHOPPING_COLLECTION = 'shoppingListItems';
+// Helper for subcollection path
+const getShoppingCollection = (teamId: string, kartId: string) => 
+    collection(db, 'teams', teamId, 'karts', kartId, 'shopping');
 
 /**
- * Get active shopping list items for current user
+ * Get active shopping list items for a kart
  * 
  * @returns Items with status 'active' or 'ordered'
  */
-export async function getActiveShoppingItems(): Promise<ShoppingListItem[]> {
-    const userId = getCurrentUserId();
+export async function getActiveShoppingItems(teamId: string, kartId: string): Promise<ShoppingListItem[]> {
+    const coll = getShoppingCollection(teamId, kartId);
 
     // Query active items
     const activeQuery = query(
-        collection(db, SHOPPING_COLLECTION),
-        where('userId', '==', userId),
+        coll,
         where('status', '==', 'active'),
         orderBy('createdAt', 'desc')
     );
 
     // Query ordered items
     const orderedQuery = query(
-        collection(db, SHOPPING_COLLECTION),
-        where('userId', '==', userId),
+        coll,
         where('status', '==', 'ordered'),
         orderBy('orderedAt', 'desc')
     );
@@ -58,15 +60,11 @@ export async function getActiveShoppingItems(): Promise<ShoppingListItem[]> {
 }
 
 /**
- * Get archived shopping items (purchase history)
- * 
- * @returns Items with status 'archived'
+ * Get archived shopping items (purchase history) for a kart
  */
-export async function getArchivedShoppingItems(): Promise<ShoppingListItem[]> {
-    const userId = getCurrentUserId();
+export async function getArchivedShoppingItems(teamId: string, kartId: string): Promise<ShoppingListItem[]> {
     const archivedQuery = query(
-        collection(db, SHOPPING_COLLECTION),
-        where('userId', '==', userId),
+        getShoppingCollection(teamId, kartId),
         where('status', '==', 'archived'),
         orderBy('archivedAt', 'desc')
     );
@@ -79,15 +77,16 @@ export async function getArchivedShoppingItems(): Promise<ShoppingListItem[]> {
  * Get expired archived items (older than 12 months)
  * 
  * Used for cleanup - items to be deleted
+ * Uses Collection Group Query to find items across all teams/karts
  */
 export async function getExpiredArchivedItems(): Promise<ShoppingListItem[]> {
-    const userId = getCurrentUserId();
     const twelveMonthsAgo = new Date();
     twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
 
+    // Note: This requires a composite index on 'shopping' collection group
+    // status ASC, archivedAt ASC
     const expiredQuery = query(
-        collection(db, SHOPPING_COLLECTION),
-        where('userId', '==', userId),
+        collectionGroup(db, 'shopping'),
         where('status', '==', 'archived'),
         where('archivedAt', '<', Timestamp.fromDate(twelveMonthsAgo))
     );
@@ -100,23 +99,23 @@ export async function getExpiredArchivedItems(): Promise<ShoppingListItem[]> {
  * Create shopping list item
  */
 export async function createShoppingItem(
+    teamId: string,
+    kartId: string,
     description: string,
-    kartId?: string,
     photoId?: string
 ): Promise<ShoppingListItem> {
-    const userId = getCurrentUserId();
     const now = Timestamp.now();
 
     const itemData = {
-        userId,
+        teamId,
+        kartId,
         description,
-        kartId: kartId || undefined,
         photoId: photoId || undefined,
         status: 'active' as const,
         createdAt: now,
     };
 
-    const docRef = await addDoc(collection(db, SHOPPING_COLLECTION), itemData);
+    const docRef = await addDoc(getShoppingCollection(teamId, kartId), itemData);
 
     return { id: docRef.id, ...itemData };
 }
@@ -124,8 +123,8 @@ export async function createShoppingItem(
 /**
  * Mark shopping item as ordered
  */
-export async function markAsOrdered(itemId: string): Promise<void> {
-    await updateDoc(doc(db, SHOPPING_COLLECTION, itemId), {
+export async function markAsOrdered(teamId: string, kartId: string, itemId: string): Promise<void> {
+    await updateDoc(doc(db, 'teams', teamId, 'karts', kartId, 'shopping', itemId), {
         status: 'ordered',
         orderedAt: Timestamp.now(),
     });
@@ -134,8 +133,8 @@ export async function markAsOrdered(itemId: string): Promise<void> {
 /**
  * Archive shopping item (move to purchase history)
  */
-export async function archiveShoppingItem(itemId: string): Promise<void> {
-    await updateDoc(doc(db, SHOPPING_COLLECTION, itemId), {
+export async function archiveShoppingItem(teamId: string, kartId: string, itemId: string): Promise<void> {
+    await updateDoc(doc(db, 'teams', teamId, 'karts', kartId, 'shopping', itemId), {
         status: 'archived',
         archivedAt: Timestamp.now(),
     });
@@ -143,18 +142,16 @@ export async function archiveShoppingItem(itemId: string): Promise<void> {
 
 /**
  * Delete shopping item permanently
- * 
- * Used for expired archive cleanup
  */
-export async function deleteShoppingItem(itemId: string): Promise<void> {
-    await deleteDoc(doc(db, SHOPPING_COLLECTION, itemId));
+export async function deleteShoppingItem(teamId: string, kartId: string, itemId: string): Promise<void> {
+    await deleteDoc(doc(db, 'teams', teamId, 'karts', kartId, 'shopping', itemId));
 }
 
 /**
  * Update shopping item description
  */
-export async function updateShoppingItem(itemId: string, description: string): Promise<void> {
-    await updateDoc(doc(db, SHOPPING_COLLECTION, itemId), {
+export async function updateShoppingItem(teamId: string, kartId: string, itemId: string, description: string): Promise<void> {
+    await updateDoc(doc(db, 'teams', teamId, 'karts', kartId, 'shopping', itemId), {
         description,
     });
 }

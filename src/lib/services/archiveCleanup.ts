@@ -33,7 +33,11 @@ export async function cleanupExpiredArchive(): Promise<number> {
         }
 
         // Delete shopping item
-        await deleteShoppingItem(item.id);
+        if (item.teamId && item.kartId) {
+             await deleteShoppingItem(item.teamId, item.kartId, item.id);
+        } else {
+            console.warn(`Cannot delete item ${item.id} - missing context`, item);
+        }
     }
 
     return expiredItems.length;

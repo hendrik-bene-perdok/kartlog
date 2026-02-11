@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('has title', async ({ page }) => {
     await page.goto('/login');
-    await expect(page).toHaveTitle(/Kartlog/);
+    await expect(page).toHaveTitle(/Kart-manager/);
 });
 
 test('redirects to login when unauthenticated', async ({ page }) => {

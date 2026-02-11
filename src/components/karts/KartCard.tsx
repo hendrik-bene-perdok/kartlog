@@ -55,16 +55,10 @@ export function KartCard({
         red: 'bg-red-600',
     };
 
-    const CardWrapper = onClick ? 'button' : Link;
-    const cardProps = onClick
-        ? { onClick, type: 'button' as const, className: 'w-full text-left' }
-        : { href: `/karts/${kart.id}` };
+    const cardClassName = `block min-h-[120px] rounded-lg border-2 ${colorClasses[warningColor]} p-4 transition-all hover:scale-[1.02] touch-manipulation relative`;
 
-    return (
-        <CardWrapper
-            {...cardProps}
-            className={`block min-h-[120px] rounded-lg border-2 ${colorClasses[warningColor]} p-4 transition-all hover:scale-[1.02] touch-manipulation relative`}
-        >
+    const cardContent = (
+        <>
             {/* Warning indicator dot */}
             <div className={`absolute top-4 right-4 w-4 h-4 rounded-full ${indicatorClasses[warningColor]}`} />
 
@@ -117,6 +111,24 @@ export function KartCard({
                     Last session: {lastSessionDate.toLocaleDateString()}
                 </div>
             )}
-        </CardWrapper>
+        </>
+    );
+
+    if (onClick) {
+        return (
+            <button
+                onClick={onClick}
+                type="button"
+                className={`w-full text-left ${cardClassName}`}
+            >
+                {cardContent}
+            </button>
+        );
+    }
+
+    return (
+        <Link href={`/app/karts/${kart.id}`} className={cardClassName}>
+            {cardContent}
+        </Link>
     );
 }

@@ -40,22 +40,12 @@ try {
 export { db };
 
 /**
- * Get current user ID
- * TODO: Replace with actual Firebase Auth when feature 002 is integrated
+ * Get current user ID from Firebase Auth
  */
 export function getCurrentUserId(): string {
-    // For MVP, use a consistent local user ID
-    // This will be replaced with Firebase Auth user ID in the team management feature
-    const localUserId = 'local-user-001';
-
-    if (typeof window !== 'undefined') {
-        // Store in localStorage for consistency across sessions
-        const storedUserId = localStorage.getItem('kartlog_user_id');
-        if (!storedUserId) {
-            localStorage.setItem('kartlog_user_id', localUserId);
-        }
-        return storedUserId || localUserId;
+    const user = auth.currentUser;
+    if (!user) {
+        throw new Error('User must be authenticated to access this resource');
     }
-
-    return localUserId;
+    return user.uid;
 }

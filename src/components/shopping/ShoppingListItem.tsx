@@ -38,8 +38,6 @@ export function ShoppingListItem({ item, onSwipeLeft, onSwipeRight, onClick }: S
         <SwipeableCard
             onSwipeLeft={onSwipeLeft}
             onSwipeRight={onSwipeRight}
-            leftColor="green"
-            rightColor="gray"
         >
             <div className="flex gap-3" onClick={onClick}>
                 {photoUrl && (

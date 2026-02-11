@@ -33,7 +33,7 @@ interface DeleteKartDialogProps {
  * @param onDeleted - Callback after successful deletion
  */
 export function DeleteKartDialog({ kart, onClose, onDeleted }: DeleteKartDialogProps) {
-    const { deleteKart } = useKarts();
+    const { deleteKart } = useKarts(kart.teamId);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [counts, setCounts] = useState<{
@@ -46,7 +46,7 @@ export function DeleteKartDialog({ kart, onClose, onDeleted }: DeleteKartDialogP
         const loadCounts = async () => {
             try {
                 const [taskCount, sessionCount] = await Promise.all([
-                    getPendingTaskCount(kart.id),
+                    getPendingTaskCount(kart.teamId, kart.id),
                     getSessionCount(kart.id),
                 ]);
 

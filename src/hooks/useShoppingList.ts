@@ -3,6 +3,7 @@
  * Feature: 004-maintenance-core
  * 
  * React hook for managing shopping list items
+ * Refactored for Team Ownership
  */
 
 'use client';
@@ -25,38 +26,29 @@ interface UseShoppingListReturn {
     loading: boolean;
     error: Error | null;
     refetch: () => Promise<void>;
-    createItem: (description: string, kartId?: string, photoId?: string) => Promise<ShoppingListItem>;
+    createItem: (description: string, photoId?: string) => Promise<ShoppingListItem>;
     markItemOrdered: (itemId: string) => Promise<void>;
     archiveItem: (itemId: string) => Promise<void>;
     updateItem: (itemId: string, description: string) => Promise<void>;
     deleteItem: (itemId: string) => Promise<void>;
 }
 
-/**
- * Hook for managing shopping list items
- * 
- * Features:
- * - Separate active and archived lists
- * - Optimistic UI updates
- * - Error handling
- * - Photo attachment support
- * 
- * @returns Shopping list state and CRUD operations
- */
-export function useShoppingList(): UseShoppingListReturn {
+export function useShoppingList(teamId: string, kartId: string): UseShoppingListReturn {
     const [activeItems, setActiveItems] = useState<ShoppingListItem[]>([]);
     const [archivedItems, setArchivedItems] = useState<ShoppingListItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     const fetchItems = async () => {
+        if (!teamId || !kartId) return;
+
         try {
             setLoading(true);
             setError(null);
 
             const [active, archived] = await Promise.all([
-                getActiveShoppingItems(),
-                getArchivedShoppingItems(),
+                getActiveShoppingItems(teamId, kartId),
+                getArchivedShoppingItems(teamId, kartId),
             ]);
 
             setActiveItems(active);
@@ -70,15 +62,14 @@ export function useShoppingList(): UseShoppingListReturn {
 
     useEffect(() => {
         fetchItems();
-    }, []);
+    }, [teamId, kartId]);
 
     const createItem = async (
         description: string,
-        kartId?: string,
         photoId?: string
     ): Promise<ShoppingListItem> => {
         try {
-            const newItem = await createShoppingItemRepo(description, kartId, photoId);
+            const newItem = await createShoppingItemRepo(teamId, kartId, description, photoId);
             setActiveItems(prev => [newItem, ...prev]); // Optimistic update
             return newItem;
         } catch (err) {
@@ -89,7 +80,7 @@ export function useShoppingList(): UseShoppingListReturn {
 
     const markItemOrdered = async (itemId: string): Promise<void> => {
         try {
-            await markAsOrdered(itemId);
+            await markAsOrdered(teamId, kartId, itemId);
 
             // Optimistic update
             setActiveItems(prev =>
@@ -105,7 +96,7 @@ export function useShoppingList(): UseShoppingListReturn {
 
     const archiveItem = async (itemId: string): Promise<void> => {
         try {
-            await archiveShoppingItemRepo(itemId);
+            await archiveShoppingItemRepo(teamId, kartId, itemId);
 
             // Optimistic update: move from active to archived
             const item = activeItems.find(i => i.id === itemId);
@@ -121,7 +112,7 @@ export function useShoppingList(): UseShoppingListReturn {
 
     const updateItem = async (itemId: string, description: string): Promise<void> => {
         try {
-            await updateShoppingItemRepo(itemId, description);
+            await updateShoppingItemRepo(teamId, kartId, itemId, description);
 
             // Optimistic update
             setActiveItems(prev =>
@@ -137,7 +128,7 @@ export function useShoppingList(): UseShoppingListReturn {
 
     const deleteItem = async (itemId: string): Promise<void> => {
         try {
-            await deleteShoppingItem(itemId);
+            await deleteShoppingItem(teamId, kartId, itemId);
 
             // Optimistic update
             setActiveItems(prev => prev.filter(i => i.id !== itemId));

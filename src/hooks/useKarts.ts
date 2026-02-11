@@ -17,33 +17,45 @@ interface UseKartsReturn {
     error: Error | null;
     refetch: () => Promise<void>;
     createKart: (name: string) => Promise<Kart>;
-    updateKart: (kartId: string, updates: Partial<Omit<Kart, 'id' | 'userId' | 'createdAt'>>) => Promise<void>;
-    deleteKart: (kartId: string) => Promise<{ tasksDeleted: number; shoppingItemsDeleted: number; sessionLogsDeleted: number }>;
+    updateKart: (kartId: string, updates: Partial<Omit<Kart, 'id' | 'teamId' | 'createdAt'>>) => Promise<void>;
+    deleteKart: (kartId: string) => Promise<{ tasksDeleted: number; shoppingItemsDeleted: number }>;
 }
 
 /**
- * Hook for managing all karts for current user
+ * Hook for managing all karts for a team
  * 
  * Features:
- * - Automatic loading on mount
+ * - Automatic loading on mount when teamId is present
  * - Optimistic UI updates
  * - Error handling
  * - Refetch capability
  * 
+ * @param teamId - The ID of the team to fetch karts for
  * @returns Karts state and CRUD operations
  */
-export function useKarts(): UseKartsReturn {
+export function useKarts(teamId: string): UseKartsReturn {
     const [karts, setKarts] = useState<Kart[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     const fetchKarts = async () => {
+        if (!teamId) {
+            setLoading(false);
+            return;
+        }
+        
         try {
+            console.log(`[useKarts] Fetching karts for teamId: ${teamId}`);
             setLoading(true);
             setError(null);
-            const fetchedKarts = await getKarts();
+            const fetchedKarts = await getKarts(teamId);
             setKarts(fetchedKarts);
-        } catch (err) {
+        } catch (err: any) {
+            console.error('useKarts fetch error:', err);
+            // Permission denied usually comes with a code
+            if (err?.code === 'permission-denied') {
+                console.error(`Permission denied accessing team: ${teamId}. Check if user is active member.`);
+            }
             setError(err instanceof Error ? err : new Error('Failed to fetch karts'));
         } finally {
             setLoading(false);
@@ -52,14 +64,17 @@ export function useKarts(): UseKartsReturn {
 
     useEffect(() => {
         fetchKarts();
-    }, []);
+    }, [teamId]);
 
     const createKart = async (name: string): Promise<Kart> => {
+        if (!teamId) throw new Error("Cannot create kart without teamId");
+        
         try {
-            const newKart = await createKartRepo(name);
+            const newKart = await createKartRepo(teamId, name);
             setKarts(prev => [newKart, ...prev]); // Optimistic update
             return newKart;
         } catch (err) {
+            console.error(err);
             setError(err instanceof Error ? err : new Error('Failed to create kart'));
             throw err;
         }
@@ -67,10 +82,12 @@ export function useKarts(): UseKartsReturn {
 
     const updateKart = async (
         kartId: string,
-        updates: Partial<Omit<Kart, 'id' | 'userId' | 'createdAt'>>
+        updates: Partial<Omit<Kart, 'id' | 'teamId' | 'createdAt'>>
     ): Promise<void> => {
+        if (!teamId) throw new Error("Cannot update kart without teamId");
+
         try {
-            await updateKartRepo(kartId, updates);
+            await updateKartRepo(teamId, kartId, updates);
 
             // Optimistic update in state
             setKarts(prev =>
@@ -85,8 +102,10 @@ export function useKarts(): UseKartsReturn {
     };
 
     const deleteKart = async (kartId: string) => {
+        if (!teamId) throw new Error("Cannot delete kart without teamId");
+
         try {
-            const result = await deleteKartRepo(kartId);
+            const result = await deleteKartRepo(teamId, kartId);
 
             // Optimistic update in state
             setKarts(prev => prev.filter(kart => kart.id !== kartId));
@@ -122,29 +141,29 @@ interface UseSingleKartReturn {
  * @param kartId - Kart ID to fetch
  * @returns Single kart state
  */
-export function useSingleKart(kartId: string): UseSingleKartReturn {
+export function useSingleKart(teamId: string, kartId: string): UseSingleKartReturn {
     const [kart, setKart] = useState<Kart | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     const fetchKart = async () => {
+        if (!teamId || !kartId) return;
         try {
             setLoading(true);
             setError(null);
-            const fetchedKart = await getKart(kartId);
+            const fetchedKart = await getKart(teamId, kartId);
             setKart(fetchedKart);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to fetch kart'));
+        } catch (err: any) {
+            console.error('useKarts fetch error:', err);
+            setError(err instanceof Error ? err : new Error(`Failed to fetch karts: ${err?.message || 'Unknown error'}`));
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (kartId) {
-            fetchKart();
-        }
-    }, [kartId]);
+        fetchKart();
+    }, [teamId, kartId]);
 
     return {
         kart,

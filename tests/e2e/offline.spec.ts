@@ -4,7 +4,7 @@ test('manifest exists', async ({ page }) => {
     const response = await page.goto('/manifest.json');
     expect(response?.status()).toBe(200);
     const manifest = await response?.json();
-    expect(manifest.name).toBe('Kartlog');
+    expect(manifest.name).toBe('Kart-manager');
 });
 
 test('offline behavior placeholder', async ({ page }) => {

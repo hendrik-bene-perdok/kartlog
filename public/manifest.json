@@ -1,6 +1,6 @@
 {
-    "name": "Kartlog",
-    "short_name": "Kartlog",
+    "name": "Kart-manager",
+    "short_name": "Kart-manager",
     "description": "Track your kart maintenance and session hours",
     "start_url": "/",
     "display": "standalone",
